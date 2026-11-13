@@ -3,7 +3,7 @@ import torch.nn as nn
 import math
 
 class SingleHeadAttn(nn.Module):
-    def __init__(self, embs_dim, dim):
+    def __init__(self, embs_dim, dim, mask_tf=False):
         super().__init__()
         # projection matrices
         self.Q = nn.Linear(embs_dim, dim)
@@ -11,7 +11,8 @@ class SingleHeadAttn(nn.Module):
         self.V = nn.Linear(embs_dim, dim)
 
         self.dim = dim
-        
+        self.embs_dim = embs_dim
+        self.mask_tf = mask_tf
     def forward(self, X):
         # here x represents our inputs 
         #   x_1(5, 5, 5)
@@ -30,6 +31,19 @@ class SingleHeadAttn(nn.Module):
 
         #scale
         X = X * (1/math.sqrt(self.dim))
+
+        # here is where we add our mask for decoding
+        # this makes it so words dont attend to future positions
+        # mask is upper triange
+        #   (0, -inf, -inf)
+        #   (0,    0, -inf)
+        #   (0,    0,    0)
+        # is n x n where n is the number of words
+        if mask_tf:
+            n = X.size(-1)
+            mask = torch.triu(torch.ones(n, n, dtype=torch.bool, device=X.device), diagonal=1)
+            X = X.masked_fill(mask, float('-inf'))
+
 
         #softmax rows
         X = torch.softmax(X, dim=-1)

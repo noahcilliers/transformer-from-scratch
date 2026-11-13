@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data, checkpoints and experiment logs
+data/
+checkpoints/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+runs/
+wandb/
+
+# Secrets
+.env
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store

@@ -5,7 +5,7 @@ from single_head import SingleHeadAttn
 """
 so this class does multi head attention
 
-owning 8 attention heads it does attention for all of them
+owning n attention heads it does attention for all of them
 then concats them together and puts them through a linear out
 
 """
@@ -13,6 +13,7 @@ then concats them together and puts them through a linear out
 class MultiHeadAttn(nn.Module):
     def __init__(self, embs_dim, dim, heads):
         super().__init__()
+        assert dim % heads == 0
         self.attn_heads = nn.ModuleList(SingleHeadAttn(embs_dim, dim//heads) for i in range(heads))
 
         self.out = nn.Linear(dim, dim)

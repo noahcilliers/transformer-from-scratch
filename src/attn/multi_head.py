@@ -1,34 +1,25 @@
 import torch
-import torch.nn
+import torch.nn as nn
 from single_head import SingleHeadAttn
 
-class MultiHeadAttn(nn.Module):
-    def __init__(self, embs_dim, dim):
-        super().__init__()
-        #lets just make 8 heads
-        self.head1 = SingleHeadAttn(embs_dim, dim/8)
-        self.head2 = SingleHeadAttn(embs_dim, dim/8)
-        self.head3 = SingleHeadAttn(embs_dim, dim/8)
-        self.head4 = SingleHeadAttn(embs_dim, dim/8)
-        self.head5 = SingleHeadAttn(embs_dim, dim/8)
-        self.head6 = SingleHeadAttn(embs_dim, dim/8)
-        self.head7 = SingleHeadAttn(embs_dim, dim/8)
-        self.head8 = SingleHeadAttn(embs_dim, dim/8)
+"""
+so this class does multi head attention
 
-        self.out = nn.Linear(embs_dim, dim)
+owning 8 attention heads it does attention for all of them
+then concats them together and puts them through a linear out
+
+"""
+
+class MultiHeadAttn(nn.Module):
+    def __init__(self, embs_dim, dim, heads):
+        super().__init__()
+        self.attn_heads = nn.ModuleList(SingleHeadAttn(embs_dim, dim//heads) for i in range(heads))
+
+        self.out = nn.Linear(dim, dim)
+        self.dim = dim
+        self.heads = heads
 
     def forward(self, X):
-
-        x_1 = self.head1(X)
-        x_2 = self.head2(X)
-        x_3 = self.head3(X)
-        x_4 = self.head4(X)
-        x_5 = self.head5(X)
-        x_6 = self.head6(X)
-        x_7 = self.head7(X)
-        x_8 = self.head8(X)
-
-        X = torch.concat((x_1, x_2, x_3, x_4, x_5, x_6, x_7, x_8), dim=0)
-
-
-        return self.out(X)
+        # collect outs as a list and then concat together
+        outs = [head(X) for head in self.attn_heads]
+        return self.out(torch.cat(outs, dim=-1))

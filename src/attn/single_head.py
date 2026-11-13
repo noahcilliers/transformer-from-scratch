@@ -1,14 +1,16 @@
 import torch
-import torch.nn
+import torch.nn as nn
 import math
 
 class SingleHeadAttn(nn.Module):
-    def init(self, embs_dim, dim):
+    def __init__(self, embs_dim, dim):
         super().__init__()
         # projection matrices
         self.Q = nn.Linear(embs_dim, dim)
         self.K = nn.Linear(embs_dim, dim)
         self.V = nn.Linear(embs_dim, dim)
+
+        self.dim = dim
         
     def forward(self, X):
         # here x represents our inputs 
@@ -24,13 +26,15 @@ class SingleHeadAttn(nn.Module):
         # transpose the second and third dim
         # since we have batch x n x d, we swap the d and n
         # X is now n x n
-        X = Q @ K.transpose(1,2)
+        X = Q @ K.transpose(-2, -1)
 
         #scale
-        X = X * (1/match.sqrt(dim))
+        X = X * (1/math.sqrt(self.dim))
+
+        #softmax rows
+        X = torch.softmax(X, dim=-1)
 
         # get values
         X = X @ V
 
-        # softmax rows
-        return torch.softmax(X, dim=1)
+        return X

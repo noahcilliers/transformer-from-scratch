@@ -28,7 +28,7 @@ class MultiHeadAttn(nn.Module):
         x_7 = self.head7(X)
         x_8 = self.head8(X)
 
-
+        X = torch.concat((x_1, x_2, x_3, x_4, x_5, x_6, x_7, x_8), dim=0)
 
 
         return self.out(X)

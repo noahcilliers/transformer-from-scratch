@@ -19,7 +19,7 @@ The goal is to understand the architecture well enough to apply it to any of the
 
 - [x] Single-head scaled dot-product attention (`src/attn/single_head.py`)
 - [x] Multi-head attention (`src/attn/multi_head.py`)
-- [ ] Causal masking
+- [x] Causal masking
 - [ ] Positional encodings
 - [ ] Feed-forward block
 - [ ] Layer norm and residual connections

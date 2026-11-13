@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from single_head import SingleHeadAttn
+from .single_head import SingleHeadAttn
 
 """
 so this class does multi head attention

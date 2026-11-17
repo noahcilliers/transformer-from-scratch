@@ -1,38 +1,30 @@
 import torch 
 import torch.nn as nn
-from .multi_head import MultiHeadAttn
+from attn import MultiHeadAttn
 
 class TransformerBlock(nn.Module):
-    def __init__(self, embs, dim, head):
+    def __init__(self, dim, head):
         """
         x has shape (batch x seq_len x embs)
 
 
         """
         super().__init__()
-        self.mha = MultiHeadAttn(embs, dim, head)
-        self.layer_norm = nn.LayerNorm(embs)
+        self.mha = MultiHeadAttn(dim, dim, head)
+        self.layer_norm1 = nn.LayerNorm(dim)
+        self.layer_norm2 = nn.LayerNorm(dim)
 
-        self.upsample = nn.Sequential(
-            nn.Linear(embs, 4 * dim)
-            nn.ReLU()
-        )
-
-        self.down = nn.Sequential(
+        self.ffn = nn.Sequential(
+            nn.Linear(dim, 4 * dim),
+            nn.ReLU(),
             nn.Linear(4 * dim, dim)
-            nn.ReLU()
         )
 
-
+    
     def forward(self, x):
         
-        x_hat = self.mha(x)
-  
-        x = x + x_hat
-        y = self.layer_norm(x)
+        x = x + self.mha(self.layer_norm1(x))
 
-        y = self.upsample(y)
-        y = self.down(y)
-        x = x + y
+        x = x + self.ffn(self.layer_norm2(x))
         
-        return self.layer_norm(x)
+        return x

@@ -39,7 +39,7 @@ class SingleHeadAttn(nn.Module):
         #   (0,    0, -inf)
         #   (0,    0,    0)
         # is n x n where n is the number of words
-        if mask_tf:
+        if self.mask_tf:
             n = X.size(-1)
             mask = torch.triu(torch.ones(n, n, dtype=torch.bool, device=X.device), diagonal=1)
             X = X.masked_fill(mask, float('-inf'))

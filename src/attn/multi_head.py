@@ -11,10 +11,10 @@ then concats them together and puts them through a linear out
 """
 
 class MultiHeadAttn(nn.Module):
-    def __init__(self, embs_dim, dim, heads):
+    def __init__(self, embs_dim, dim, heads, mask_tf=False):
         super().__init__()
         assert dim % heads == 0
-        self.attn_heads = nn.ModuleList(SingleHeadAttn(embs_dim, dim//heads) for i in range(heads))
+        self.attn_heads = nn.ModuleList(SingleHeadAttn(embs_dim, dim//heads, mask_tf) for i in range(heads))
 
         self.out = nn.Linear(dim, dim)
         self.dim = dim

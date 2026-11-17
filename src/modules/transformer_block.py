@@ -3,14 +3,14 @@ import torch.nn as nn
 from attn import MultiHeadAttn
 
 class TransformerBlock(nn.Module):
-    def __init__(self, dim, head, mask_tf=False):
+    def __init__(self, dim, heads, mask_tf=False):
         """
         x has shape (batch x seq_len x embs)
 
 
         """
         super().__init__()
-        self.mha = MultiHeadAttn(dim, dim, head, mask_tf)
+        self.mha = MultiHeadAttn(dim, dim, heads, mask_tf)
         self.layer_norm1 = nn.LayerNorm(dim)
         self.layer_norm2 = nn.LayerNorm(dim)
 

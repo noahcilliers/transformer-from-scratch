@@ -14,9 +14,8 @@ importance sampling if we are taking multiple steps
 so maybe we can have an outer function for the overall and then inner for straight ppo, this way the importance sampling c
 """
 import torch
-from torch.optim import optim
+from torch import optim
 import copy
-from numpy import np
 
 def PPO(model, state_decider, reward_model, value_function, steps_per_turn, epochs, data_loader, compare_models):
     model.train()
@@ -33,13 +32,13 @@ def PPO(model, state_decider, reward_model, value_function, steps_per_turn, epoc
 
 
         reference_model = copy.deepcopy(model)
-        for i in range(len(states_actions)):
+        for i in range(len(states_actions-1)):
             importance_ratio = compare_models(model, reference_model)
             reward = reward_model(states_actions[i][0], states_actions[i][1])
-            value = value_function(states_actions[i+1][0])
-
-            advantage = reward - value
-            loss = min(importance_ratio * advantage, np.clip(importance_ratio, 1 - .02, 1 + .02) * advantage)
+            
+            advantage = reward + gamma * value_function(states_actions[i][0]) + value_function(states_actions[i+1][0])
+            
+            loss = -torch.min(importance_ratio * advantage, torch.clamp(importance_ratio, 1 - .2, 1 + .2) * advantage)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()

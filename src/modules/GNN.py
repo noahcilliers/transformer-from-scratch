@@ -1,5 +1,5 @@
 import torch.nn as nn
-from transformer_block.py import TransformerBlock
+from .transformer_block import TransformerBlock
 """
 so lets try to think what a GNN class really looks like
 
@@ -11,8 +11,8 @@ class GNN(nn.Module):
     def __init__(self, dim, heads):
         super().__init__()
         self.transformer = nn.Sequential(
-            TransformerBlock(dim, heads)
-            TransformerBlock(dim, heads)
+            TransformerBlock(dim, heads),
+            TransformerBlock(dim, heads),
             TransformerBlock(dim, heads)
         )
         self.linear_in = nn.Linear(dim, dim)
